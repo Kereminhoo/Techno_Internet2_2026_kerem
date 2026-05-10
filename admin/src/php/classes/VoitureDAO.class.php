@@ -78,5 +78,48 @@ class VoitureDAO
             return null;
         }
     }
+
+    public function getVoitureById($id) {
+        $sql = "SELECT * FROM voiture WHERE voiture_id = :id";
+        try {
+            $stmt = $this->cnx->prepare($sql);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                return new Voiture($row['voiture_id'], $row['marque'], $row['modele'], $row['annee'], $row['prix'], $row['km'], $row['description'], $row['image'], $row['status'], $row['cat_id']);
+            }
+            return null;
+        } catch (PDOException $e) { return null; }
+    }
+
+
+    public function deleteVoiture($id) {
+        $sql = "SELECT supprimer_voiture(:id)";
+        try {
+            $stmt = $this->cnx->prepare($sql);
+            $stmt->bindParam(':id', $id);
+            return $stmt->execute();
+        } catch (PDOException $e) { return false; }
+    }
+
+
+    public function updateVoiture($id, $marque, $modele, $annee, $prix, $km, $description, $image, $status, $cat_id) {
+        $sql = "SELECT modifier_voiture(:id, :marque, :modele, :annee, :prix, :km, :description, :image, :status, :cat_id)";
+        try {
+            $stmt = $this->cnx->prepare($sql);
+            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':marque', $marque);
+            $stmt->bindParam(':modele', $modele);
+            $stmt->bindParam(':annee', $annee);
+            $stmt->bindParam(':prix', $prix);
+            $stmt->bindParam(':km', $km);
+            $stmt->bindParam(':description', $description);
+            $stmt->bindParam(':image', $image);
+            $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
+            $stmt->bindParam(':cat_id', $cat_id);
+            return $stmt->execute();
+        } catch (PDOException $e) { return false; }
+    }
 }
 ?>
