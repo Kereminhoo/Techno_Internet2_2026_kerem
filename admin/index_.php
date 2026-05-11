@@ -1,9 +1,7 @@
 <?php
 require 'src/php/utils/all_includes.php';
 
-
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-
     header("Location: ../index_.php");
     exit;
 }
@@ -13,13 +11,35 @@ $voitureDAO = new VoitureDAO($cnx);
 
 
 if (isset($_POST['btn_ajouter'])) {
+
+
+    $nom_image = "default.jpg";
+
+
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+        $dossier_destination = "assets/images/";
+
+        $nom_image = time() . "_" . basename($_FILES['image']['name']);
+        $chemin_complet = $dossier_destination . $nom_image;
+
+
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $chemin_complet)) {
+            $nom_image = "default.jpg";
+        }
+    }
+
+
     $status = ($_POST['status'] == '1') ? true : false;
-    $nouvel_id = $voitureDAO->addVoiture($_POST['marque'], $_POST['modele'], $_POST['annee'], $_POST['prix'], $_POST['km'], $_POST['description'], $_POST['image'], $status, $_POST['cat_id']);
+
+
+    $chemin_bdd = "admin/assets/images/" . $nom_image;
+
+    $nouvel_id = $voitureDAO->addVoiture($_POST['marque'], $_POST['modele'], $_POST['annee'], $_POST['prix'], $_POST['km'], $_POST['description'], $chemin_bdd, $status, $_POST['cat_id']);
+
     if ($nouvel_id) {
         $message_info = "<div class='alert alert-success fw-bold text-center'>Véhicule ajouté (ID: $nouvel_id) !</div>";
     }
 }
-
 
 if (isset($_POST['btn_supprimer'])) {
     if ($voitureDAO->deleteVoiture($_POST['id_supprimer'])) {
@@ -47,7 +67,7 @@ $listeVoitures = $voitureDAO->getToutesLesVoitures();
     <details class="mb-5 bg-white p-3 shadow-sm" style="border-radius: 8px;">
         <summary class="fw-bold fs-5 text-primary" style="cursor: pointer;">Cliquer ici pour AJOUTER une voiture</summary>
         <div class="mt-3">
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6 mb-3"><input type="text" name="marque" class="form-control" required placeholder="Marque"></div>
                     <div class="col-md-6 mb-3"><input type="text" name="modele" class="form-control" required placeholder="Modèle"></div>
@@ -55,7 +75,12 @@ $listeVoitures = $voitureDAO->getToutesLesVoitures();
                     <div class="col-md-4 mb-3"><input type="number" step="0.01" name="prix" class="form-control" required placeholder="Prix (€)"></div>
                     <div class="col-md-4 mb-3"><input type="number" name="km" class="form-control" required placeholder="Kilométrage"></div>
                     <div class="col-12 mb-3"><textarea name="description" class="form-control" rows="2" required placeholder="Description"></textarea></div>
-                    <div class="col-12 mb-3"><input type="text" name="image" class="form-control" required value="https://via.placeholder.com/300x150/444444/FFFFFF?text=Auto"></div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-bold small">Photo du véhicule</label>
+                        <input type="file" name="image" class="form-control" accept="image/*" required>
+                    </div>
+
                     <div class="col-md-6 mb-3">
                         <select name="status" class="form-select"><option value="1">Disponible</option><option value="0">Réservée</option></select>
                     </div>
@@ -80,7 +105,7 @@ $listeVoitures = $voitureDAO->getToutesLesVoitures();
             <?php if($listeVoitures): foreach($listeVoitures as $v): ?>
                 <tr>
                     <td>#<?= $v->voiture_id ?></td>
-                    <td><img src="<?= htmlspecialchars($v->image) ?>" height="40" alt="img"></td>
+                    <td><img src="../<?= htmlspecialchars($v->image) ?>" height="40" alt="img" style="object-fit: cover; width: 60px;"></td>
                     <td><strong><?= htmlspecialchars($v->marque) ?></strong> <?= htmlspecialchars($v->modele) ?></td>
                     <td><?= number_format($v->prix, 0, ',', ' ') ?> €</td>
                     <td><?= $v->status ? '<span class="badge bg-success">Dispo</span>' : '<span class="badge bg-secondary">Réservée</span>' ?></td>
