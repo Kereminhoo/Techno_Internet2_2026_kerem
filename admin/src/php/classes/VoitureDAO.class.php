@@ -12,31 +12,44 @@ class VoitureDAO
     }
 
 
-    public function getToutesLesVoitures()
+
+    public function getToutesLesVoitures($recherche = "", $tri = "")
     {
-        $sql = "SELECT * FROM voiture ORDER BY voiture_id DESC";
+
+        $sql = "SELECT * FROM voiture WHERE 1=1";
+        $params = [];
+
+
+        if (!empty($recherche)) {
+            $sql .= " AND (marque ILIKE :recherche OR modele ILIKE :recherche)";
+            $params[':recherche'] = '%' . $recherche . '%';
+        }
+
+        if ($tri === 'prix_asc') {
+            $sql .= " ORDER BY prix ASC";
+        } elseif ($tri === 'prix_desc') {
+            $sql .= " ORDER BY prix DESC";
+        } else {
+            $sql .= " ORDER BY voiture_id DESC";
+        }
 
         try {
             $stmt = $this->cnx->prepare($sql);
-            $stmt->execute();
 
+
+            foreach ($params as $key => &$val) {
+                $stmt->bindParam($key, $val);
+            }
+
+            $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $listeVoitures = [];
-
-
             foreach ($data as $row) {
                 $listeVoitures[] = new Voiture(
-                    $row['voiture_id'],
-                    $row['marque'],
-                    $row['modele'],
-                    $row['annee'],
-                    $row['prix'],
-                    $row['km'],
-                    $row['description'],
-                    $row['image'],
-                    $row['status'],
-                    $row['cat_id']
+                    $row['voiture_id'], $row['marque'], $row['modele'],
+                    $row['annee'], $row['prix'], $row['km'],
+                    $row['description'], $row['image'], $row['status'], $row['cat_id']
                 );
             }
             return $listeVoitures;

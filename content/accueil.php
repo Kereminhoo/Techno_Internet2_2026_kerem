@@ -1,7 +1,9 @@
 <?php
+$recherche_actuelle = $_GET['recherche'] ?? '';
+$tri_actuel = $_GET['tri'] ?? '';
 
 $voitureDAO = new VoitureDAO($cnx);
-$listeVoitures = $voitureDAO->getToutesLesVoitures();
+$listeVoitures = $voitureDAO->getToutesLesVoitures($recherche_actuelle, $tri_actuel);
 ?>
 
 <main class="container-fluid py-5" style="background-color: #212529; min-height: 50vh;">
