@@ -134,5 +134,36 @@ class VoitureDAO
             return $stmt->execute();
         } catch (PDOException $e) { return false; }
     }
+
+    public function getReservationsByUser($utilisateur_id)
+    {
+
+        $sql = "SELECT v.* FROM voiture v 
+                JOIN reserver r ON v.voiture_id = r.voiture_id 
+                WHERE r.utilisateur_id = :user_id 
+                ORDER BY v.voiture_id DESC";
+
+        try {
+            $stmt = $this->cnx->prepare($sql);
+            $stmt->bindParam(':user_id', $utilisateur_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $listeVoitures = [];
+
+            foreach ($data as $row) {
+                $listeVoitures[] = new Voiture(
+                    $row['voiture_id'], $row['marque'], $row['modele'],
+                    $row['annee'], $row['prix'], $row['km'],
+                    $row['description'], $row['image'], $row['status'], $row['cat_id']
+                );
+            }
+            return $listeVoitures;
+
+        } catch (PDOException $e) {
+            print "Erreur lors de la récupération de vos réservations : " . $e->getMessage();
+            return null;
+        }
+    }
 }
 ?>

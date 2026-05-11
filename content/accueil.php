@@ -50,7 +50,7 @@ $listeVoitures = $voitureDAO->getToutesLesVoitures($recherche_actuelle, $tri_act
                                     data-id="<?= $voiture->voiture_id ?>"
                                     style="background-color: <?= $voiture->status ? '#ff4500' : '#6c757d' ?>; border-radius: 20px; padding: 5px 20px;"
                                 <?= !$voiture->status ? 'disabled' : '' ?>>
-                                <?= $voiture->status ? 'reserver' : 'Réservée ✔' ?>
+                                <?= $voiture->status ? 'reserver' : 'Réservée' ?>
                             </button>
                         </div>
                     </div>

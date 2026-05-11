@@ -7,30 +7,29 @@ class ReservationDAO {
     }
 
 
-    public function addReservation($voiture_id, $user_id, $type_res) {
+    public function getVoituresReservees($userId) {
 
-        $sql = "SELECT ajout_reservation(:voiture_id, :user_id, :type_res) AS retour";
+        $sql = "SELECT v.* FROM voiture v 
+                JOIN reserver r ON v.voiture_id = r.voiture_id 
+                WHERE r.user_id = :userId";
 
         try {
             $stmt = $this->cnx->prepare($sql);
-
-
-            $stmt->bindParam(":voiture_id", $voiture_id);
-            $stmt->bindParam(":user_id", $user_id);
-            $stmt->bindParam(":type_res", $type_res);
-
-
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-            $retour = $stmt->fetchColumn(0);
-
-            return $retour;
-
+            $liste = [];
+            foreach ($data as $row) {
+                $liste[] = new Voiture(
+                    $row['voiture_id'], $row['marque'], $row['modele'],
+                    $row['annee'], $row['prix'], $row['km'],
+                    $row['description'], $row['image'], $row['status'], $row['cat_id']
+                );
+            }
+            return $liste;
         } catch (PDOException $e) {
-            print "Erreur lors de la réservation : " . $e->getMessage();
-            return null;
+            return [];
         }
     }
 }
-?>
