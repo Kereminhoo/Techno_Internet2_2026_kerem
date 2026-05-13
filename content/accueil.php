@@ -1,4 +1,6 @@
 <?php
+
+
 $recherche_actuelle = $_GET['recherche'] ?? '';
 $tri_actuel = $_GET['tri'] ?? '';
 
@@ -6,20 +8,38 @@ $voitureDAO = new VoitureDAO($cnx);
 $listeVoitures = $voitureDAO->getToutesLesVoitures($recherche_actuelle, $tri_actuel);
 ?>
 
-<main class="container-fluid py-5" style="background-color: #212529; min-height: 50vh;">
+<main class="container-fluid py-5 bg-sombre flex-grow-1">
     <div class="container">
+
+        <form method="GET" action="index_.php" class="row justify-content-center mb-5 gap-2">
+            <input type="hidden" name="page" value="accueil">
+            <div class="col-md-6">
+                <input type="text" name="recherche" class="form-control rounded-pill" placeholder="recherche (ex: Renault, Clio...)" value="<?= htmlspecialchars($recherche_actuelle) ?>">
+            </div>
+            <div class="col-md-3">
+                <select name="tri" class="form-select rounded-pill">
+                    <option value="">tri (par défaut)</option>
+                    <option value="prix_asc" <?= $tri_actuel == 'prix_asc' ? 'selected' : '' ?>>Prix croissant</option>
+                    <option value="prix_desc" <?= $tri_actuel == 'prix_desc' ? 'selected' : '' ?>>Prix décroissant</option>
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-orange fw-bold">Go</button>
+            </div>
+        </form>
+
         <div class="row justify-content-center gap-4">
 
             <?php
             if ($listeVoitures) :
                 foreach ($listeVoitures as $voiture) :
                     ?>
-                    <div class="col-md-3 p-3 d-flex flex-column shadow-sm" style="background-color: #d3d3d3; border-radius: 8px;">
+                    <div class="col-md-3 p-3 d-flex flex-column shadow-sm carte-voiture">
 
-                        <img src="<?= htmlspecialchars($voiture->image) ?>" class="w-100 mb-3" style="height: 200px; object-fit: cover; border-radius: 5px;" alt="<?= htmlspecialchars($voiture->marque) ?>">
+                        <img src="<?= htmlspecialchars($voiture->image) ?>" class="w-100 mb-3 img-carte" alt="<?= htmlspecialchars($voiture->marque) ?>">
 
                         <div class="d-flex justify-content-between mb-2 gap-2">
-                            <div class="bg-white p-2 flex-grow-1" style="font-size: 0.85rem; line-height: 1.2; border-radius: 5px;">
+                            <div class="bg-white p-2 flex-grow-1 rounded small lh-sm">
                                 <div>marque : <strong><?= htmlspecialchars($voiture->marque) ?></strong></div>
                                 <div>model : <?= htmlspecialchars($voiture->modele) ?></div>
                                 <div>annee : <?= htmlspecialchars($voiture->annee) ?></div>
@@ -27,28 +47,27 @@ $listeVoitures = $voitureDAO->getToutesLesVoitures($recherche_actuelle, $tri_act
                             </div>
 
                             <?php if ($voiture->status == true) : ?>
-                                <div class="bg-success text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold" style="width: 40%; font-size: 0.85rem; border-radius: 5px;">
+                                <div class="bg-success text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold rounded small w-50">
                                     DISPONIBLE
                                 </div>
                             <?php else : ?>
-                                <div class="bg-secondary text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold" style="width: 40%; font-size: 0.85rem; border-radius: 5px;">
+                                <div class="bg-secondary text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold rounded small w-50">
                                     RÉSERVÉE
                                 </div>
                             <?php endif; ?>
                         </div>
 
-                        <div class="bg-white p-2 mb-3" style="font-size: 0.8rem; border-radius: 5px; flex-grow: 1;">
-                            <p class="mb-0 text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        <div class="bg-white p-2 mb-3 rounded small flex-grow-1">
+                            <p class="mb-0 text-muted desc-3-lignes">
                                 <?= htmlspecialchars($voiture->description) ?>
                             </p>
                         </div>
 
                         <div class="d-flex justify-content-center gap-3 mt-auto">
-                            <button class="btn text-white fw-bold" style="background-color: #ff4500; border-radius: 20px; padding: 5px 20px;">acheter</button>
+                            <button class="btn btn-orange fw-bold">acheter</button>
 
-                            <button class="btn text-white fw-bold btn-reserver"
+                            <button class="btn fw-bold btn-reserver <?= $voiture->status ? 'btn-orange' : 'btn-secondary' ?>"
                                     data-id="<?= $voiture->voiture_id ?>"
-                                    style="background-color: <?= $voiture->status ? '#ff4500' : '#6c757d' ?>; border-radius: 20px; padding: 5px 20px;"
                                 <?= !$voiture->status ? 'disabled' : '' ?>>
                                 <?= $voiture->status ? 'reserver' : 'Réservée' ?>
                             </button>

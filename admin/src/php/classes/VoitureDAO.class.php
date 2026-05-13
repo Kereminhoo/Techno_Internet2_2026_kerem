@@ -1,24 +1,17 @@
 <?php
-
-
 class VoitureDAO
 {
     private $cnx;
-
 
     public function __construct($cnx)
     {
         $this->cnx = $cnx;
     }
 
-
-
     public function getToutesLesVoitures($recherche = "", $tri = "")
     {
-
         $sql = "SELECT * FROM voiture WHERE 1=1";
         $params = [];
-
 
         if (!empty($recherche)) {
             $sql .= " AND (marque ILIKE :recherche OR modele ILIKE :recherche)";
@@ -35,7 +28,6 @@ class VoitureDAO
 
         try {
             $stmt = $this->cnx->prepare($sql);
-
 
             foreach ($params as $key => &$val) {
                 $stmt->bindParam($key, $val);
@@ -60,31 +52,26 @@ class VoitureDAO
         }
     }
 
-
     public function addVoiture($marque, $modele, $annee, $prix, $km, $description, $image, $status, $cat_id)
     {
 
-        $sql = "SELECT ajout_voiture(:marque, :modele, :annee, :prix, :km, :description, :image, :status, :cat_id) AS retour";
+        $sql = "SELECT ajout_voiture(:marque, :modele, :annee, :prix, :km, :description, :image, :status, :cat_id)";
 
         try {
             $stmt = $this->cnx->prepare($sql);
 
-
             $stmt->bindParam(':marque', $marque);
             $stmt->bindParam(':modele', $modele);
-            $stmt->bindParam(':annee', $annee);
+            $stmt->bindParam(':annee', $annee, PDO::PARAM_INT);
             $stmt->bindParam(':prix', $prix);
-            $stmt->bindParam(':km', $km);
+            $stmt->bindParam(':km', $km, PDO::PARAM_INT);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':image', $image);
-
             $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
-            $stmt->bindParam(':cat_id', $cat_id);
+            $stmt->bindParam(':cat_id', $cat_id, PDO::PARAM_INT);
 
             $stmt->execute();
-
-
-            return $stmt->fetchColumn(0);
+            return $stmt->fetchColumn(0) ?? true;
 
         } catch (PDOException $e) {
             print "Erreur lors de l'ajout de la voiture : " . $e->getMessage();
@@ -96,7 +83,7 @@ class VoitureDAO
         $sql = "SELECT * FROM voiture WHERE voiture_id = :id";
         try {
             $stmt = $this->cnx->prepare($sql);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
@@ -106,64 +93,33 @@ class VoitureDAO
         } catch (PDOException $e) { return null; }
     }
 
-
     public function deleteVoiture($id) {
+
         $sql = "SELECT supprimer_voiture(:id)";
         try {
             $stmt = $this->cnx->prepare($sql);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) { return false; }
     }
 
-
     public function updateVoiture($id, $marque, $modele, $annee, $prix, $km, $description, $image, $status, $cat_id) {
+
         $sql = "SELECT modifier_voiture(:id, :marque, :modele, :annee, :prix, :km, :description, :image, :status, :cat_id)";
         try {
             $stmt = $this->cnx->prepare($sql);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':marque', $marque);
             $stmt->bindParam(':modele', $modele);
-            $stmt->bindParam(':annee', $annee);
+            $stmt->bindParam(':annee', $annee, PDO::PARAM_INT);
             $stmt->bindParam(':prix', $prix);
-            $stmt->bindParam(':km', $km);
+            $stmt->bindParam(':km', $km, PDO::PARAM_INT);
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':image', $image);
             $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
-            $stmt->bindParam(':cat_id', $cat_id);
+            $stmt->bindParam(':cat_id', $cat_id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) { return false; }
-    }
-
-    public function getReservationsByUser($utilisateur_id)
-    {
-
-        $sql = "SELECT v.* FROM voiture v 
-                JOIN reserver r ON v.voiture_id = r.voiture_id 
-                WHERE r.utilisateur_id = :user_id 
-                ORDER BY v.voiture_id DESC";
-
-        try {
-            $stmt = $this->cnx->prepare($sql);
-            $stmt->bindParam(':user_id', $utilisateur_id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $listeVoitures = [];
-
-            foreach ($data as $row) {
-                $listeVoitures[] = new Voiture(
-                    $row['voiture_id'], $row['marque'], $row['modele'],
-                    $row['annee'], $row['prix'], $row['km'],
-                    $row['description'], $row['image'], $row['status'], $row['cat_id']
-                );
-            }
-            return $listeVoitures;
-
-        } catch (PDOException $e) {
-            print "Erreur lors de la récupération de vos réservations : " . $e->getMessage();
-            return null;
-        }
     }
 }
 ?>

@@ -1,11 +1,12 @@
 
+
 $(document).ready(function() {
     $('.btn-reserver').click(function(e) {
         e.preventDefault();
 
-        var bouton = $(this);
-        var idVoiture = bouton.data('id');
 
+        let bouton = $(this);
+        let idVoiture = bouton.data('id');
 
         $.ajax({
             url: 'admin/src/php/ajax/ajax_reservation.php',
@@ -16,8 +17,13 @@ $(document).ready(function() {
                 if (response.success) {
 
                     bouton.text('Réservée');
-                    bouton.css('background-color', '#6c757d');
+
+
+                    bouton.removeClass('btn-orange').addClass('btn-secondary');
+
+
                     bouton.prop('disabled', true);
+
                     alert(response.message);
                 } else {
                     alert(response.message);
