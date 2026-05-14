@@ -13,6 +13,7 @@ if (isset($_POST['btn_ajouter'])) {
         $nom_image = time() . "_" . basename($_FILES['image']['name']);
 
 
+
         if (move_uploaded_file($_FILES['image']['tmp_name'], $dossier_destination . $nom_image)) {
             $chemin_bdd = "admin/assets/images/" . $nom_image;
         }

@@ -34,6 +34,8 @@ if ($page === 'accueil') {
     require 'content/accueil.php';
 } elseif ($page === 'modifier') {
     require 'content/modifier.php';
+} elseif ($page === 'messages') {
+    require 'content/messages.php';
 } else {
     echo "<h2 class='text-white text-center mt-5'>Page introuvable</h2>";
 }

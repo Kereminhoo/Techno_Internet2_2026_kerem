@@ -2,7 +2,7 @@
     <div class="container d-flex justify-content-between align-items-center">
 
         <div>
-            <a href="#" class="btn btn-orange-large fw-bold">contact</a>
+            <a href="index_.php?page=contact" class="btn btn-orange-large fw-bold">contact</a>
         </div>
 
         <div class="text-center">
