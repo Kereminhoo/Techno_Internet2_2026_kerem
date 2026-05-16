@@ -34,7 +34,7 @@ if ($listeVoitures) {
             </div>
 
             <div class="d-flex justify-content-center gap-3 mt-auto">
-                <button class="btn btn-orange fw-bold">acheter</button>
+                <a href="index_.php?page=achat&id=<?= $voiture->voiture_id ?>" class="btn btn-orange fw-bold text-decoration-none">acheter</a>
                 <button class="btn fw-bold btn-reserver <?= $voiture->status ? 'btn-orange' : 'btn-secondary' ?>"
                         data-id="<?= $voiture->voiture_id ?>" <?= !$voiture->status ? 'disabled' : '' ?>>
                     <?= $voiture->status ? 'reserver' : 'Réservée' ?>
