@@ -1,37 +1,46 @@
-<header class="py-3 bg-gris-clair">
-    <div class="container d-flex justify-content-between align-items-center">
+<header class="bg-gris-clair shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light container py-3">
+        <a class="navbar-brand font-impact fs-3 m-0" href="<?= $isAdmin ? '../index_.php' : 'index_.php' ?>">AUTO GARAGE KEREM 42</a>
 
-        <div>
-            <a href="index_.php?page=contact" class="btn btn-orange-large fw-bold">contact</a>
-        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <div class="text-center">
-            <a href="<?= $isAdmin ? '../index_.php' : 'index_.php' ?>" class="text-dark text-decoration-none">
-                <h1 class="m-0 fw-bold fs-3 font-impact">AUTO GARAGE KEREM 42</h1>
-            </a>
-        </div>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-3">
+                <li class="nav-item">
+                    <a href="<?= $isAdmin ? '../index_.php' : 'index_.php' ?>" class="nav-link fw-bold text-dark hover-orange">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= $isAdmin ? '../index_.php?page=contact' : 'index_.php?page=contact' ?>" class="nav-link fw-bold text-dark hover-orange">Contact</a>
+                </li>
 
-        <div class="d-flex align-items-center gap-3">
+                <?php if (isset($_SESSION['user_id'])): ?>
 
-            <a href="<?= $isAdmin ? '../index_.php' : 'index_.php' ?>" class="btn btn-sm btn-outline-dark fw-bold" style="border-radius: 15px;">Accueil</a>
+                    <?php if ($_SESSION['role'] === 'admin'): ?>
+                        <li class="nav-item">
+                            <?php $lien_admin = $isAdmin ? 'index_.php' : 'admin/index_.php'; ?>
+                            <a href="<?= $lien_admin ?>" class="btn btn-sm btn-danger fw-bold rounded-pill px-3">Panel Admin</a>
+                        </li>
+                    <?php endif; ?>
 
-            <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            Bonjour, <?= htmlspecialchars($_SESSION['nom']) ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item fw-bold" href="<?= $isAdmin ? '../index_.php?page=reservation' : 'index_.php?page=reservation' ?>">Mes réservations</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="<?= $isAdmin ? '../index_.php?page=deconnexion' : 'index_.php?page=deconnexion' ?>">Déconnexion</a></li>
+                        </ul>
+                    </li>
 
-                <?php if ($_SESSION['role'] === 'admin'): ?>
-                    <?php $lien_admin = $isAdmin ? 'index_.php' : 'admin/index_.php'; ?>
-                    <a href="<?= $lien_admin ?>" class="btn btn-sm text-white fw-bold" style="background-color: #dc3545; border-radius: 15px;">Panel Admin</a>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a href="index_.php?page=connexion" class="btn btn-orange fw-bold rounded-pill px-4">Se connecter</a>
+                    </li>
                 <?php endif; ?>
-
-                <span class="text-dark fw-bold">Bonjour, <?= htmlspecialchars($_SESSION['nom']) ?></span>
-
-                <a href="<?= $isAdmin ? '../index_.php?page=reservation' : 'index_.php?page=reservation' ?>" class="btn btn-sm btn-orange fw-bold">Mes réservations</a>
-
-                <a href="<?= $isAdmin ? '../index_.php?page=deconnexion' : 'index_.php?page=deconnexion' ?>" class="btn btn-sm btn-outline-dark" style="border-radius: 15px;">Déconnexion</a>
-
-            <?php else: ?>
-                <span class="fs-2" style="cursor:pointer;">Panier</span>
-                <a href="index_.php?page=connexion" class="text-dark text-decoration-none fs-2">Profile</a>
-            <?php endif; ?>
+            </ul>
         </div>
-    </div>
+    </nav>
 </header>

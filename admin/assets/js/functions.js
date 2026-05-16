@@ -1,6 +1,9 @@
 $(document).ready(function() {
 
-    $('.btn-reserver').click(function(e) {
+
+
+
+    $(document).on('click', '.btn-reserver', function(e) {
         e.preventDefault();
 
         let bouton = $(this);
@@ -26,6 +29,8 @@ $(document).ready(function() {
             }
         });
     });
+
+
 
 
     $('#form-contact').submit(function(e) {
@@ -59,5 +64,40 @@ $(document).ready(function() {
             }
         });
     });
+
+
+
+    function chargerVoitures() {
+        let recherche = $('#input-recherche').val();
+        let tri = $('#select-tri').val();
+
+        $.ajax({
+            url: 'admin/src/php/ajax/ajax_recherche.php',
+            type: 'POST',
+            data: { recherche: recherche, tri: tri },
+            success: function(html) {
+                $('#resultats-voitures').html(html);
+            },
+            error: function() {
+                console.log("Erreur lors du chargement des voitures.");
+            }
+        });
+    }
+
+    $('#input-recherche').on('keyup', function() {
+        chargerVoitures();
+    });
+
+    $('#select-tri').on('change', function() {
+        chargerVoitures();
+    });
+
+    $('#form-recherche').submit(function(e) {
+        e.preventDefault();
+    });
+
+    if ($('#resultats-voitures').length > 0) {
+        chargerVoitures();
+    }
 
 });

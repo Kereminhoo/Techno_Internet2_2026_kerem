@@ -1,86 +1,27 @@
 <?php
-
-
-$recherche_actuelle = $_GET['recherche'] ?? '';
-$tri_actuel = $_GET['tri'] ?? '';
-
-$voitureDAO = new VoitureDAO($cnx);
-$listeVoitures = $voitureDAO->getToutesLesVoitures($recherche_actuelle, $tri_actuel);
 ?>
 
 <main class="container-fluid py-5 bg-sombre flex-grow-1">
     <div class="container">
 
-        <form method="GET" action="index_.php" class="row justify-content-center mb-5 gap-2">
-            <input type="hidden" name="page" value="accueil">
+        <form id="form-recherche" class="row justify-content-center mb-5 gap-2">
             <div class="col-md-6">
-                <input type="text" name="recherche" class="form-control rounded-pill" placeholder="recherche (ex: Renault, Clio...)" value="<?= htmlspecialchars($recherche_actuelle) ?>">
+                <input type="text" id="input-recherche" name="recherche" class="form-control rounded-pill" placeholder="recherche (ex: Renault, Clio...)">
             </div>
             <div class="col-md-3">
-                <select name="tri" class="form-select rounded-pill">
+                <select id="select-tri" name="tri" class="form-select rounded-pill">
                     <option value="">tri (par défaut)</option>
-                    <option value="prix_asc" <?= $tri_actuel == 'prix_asc' ? 'selected' : '' ?>>Prix croissant</option>
-                    <option value="prix_desc" <?= $tri_actuel == 'prix_desc' ? 'selected' : '' ?>>Prix décroissant</option>
+                    <option value="prix_asc">Prix croissant</option>
+                    <option value="prix_desc">Prix décroissant</option>
                 </select>
-            </div>
-            <div class="col-md-auto">
-                <button type="submit" class="btn btn-orange fw-bold">Go</button>
             </div>
         </form>
 
-        <div class="row justify-content-center gap-4">
+        <div id="resultats-voitures" class="row justify-content-center gap-4">
 
-            <?php
-            if ($listeVoitures) :
-                foreach ($listeVoitures as $voiture) :
-                    ?>
-                    <div class="col-md-3 p-3 d-flex flex-column shadow-sm carte-voiture">
-
-                        <img src="<?= htmlspecialchars($voiture->image) ?>" class="w-100 mb-3 img-carte" alt="<?= htmlspecialchars($voiture->marque) ?>">
-
-                        <div class="d-flex justify-content-between mb-2 gap-2">
-                            <div class="bg-white p-2 flex-grow-1 rounded small lh-sm">
-                                <div>marque : <strong><?= htmlspecialchars($voiture->marque) ?></strong></div>
-                                <div>model : <?= htmlspecialchars($voiture->modele) ?></div>
-                                <div>annee : <?= htmlspecialchars($voiture->annee) ?></div>
-                                <div class="text-primary mt-1">prix : <strong><?= number_format($voiture->prix, 0, ',', ' ') ?> €</strong></div>
-                            </div>
-
-                            <?php if ($voiture->status == true) : ?>
-                                <div class="bg-success text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold rounded small w-50">
-                                    DISPONIBLE
-                                </div>
-                            <?php else : ?>
-                                <div class="bg-secondary text-white p-2 d-flex align-items-center justify-content-center text-center fw-bold rounded small w-50">
-                                    RÉSERVÉE
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="bg-white p-2 mb-3 rounded small flex-grow-1">
-                            <p class="mb-0 text-muted desc-3-lignes">
-                                <?= htmlspecialchars($voiture->description) ?>
-                            </p>
-                        </div>
-
-                        <div class="d-flex justify-content-center gap-3 mt-auto">
-                            <button class="btn btn-orange fw-bold">acheter</button>
-
-                            <button class="btn fw-bold btn-reserver <?= $voiture->status ? 'btn-orange' : 'btn-secondary' ?>"
-                                    data-id="<?= $voiture->voiture_id ?>"
-                                <?= !$voiture->status ? 'disabled' : '' ?>>
-                                <?= $voiture->status ? 'reserver' : 'Réservée' ?>
-                            </button>
-                        </div>
-                    </div>
-                <?php
-                endforeach;
-            else :
-                ?>
-                <div class="col-12 text-center text-white">
-                    <h3>Aucun véhicule disponible pour le moment.</h3>
-                </div>
-            <?php endif; ?>
+            <div class="col-12 text-center text-white mt-5">
+                <h3>Chargement des véhicules...</h3>
+            </div>
 
         </div>
     </div>
